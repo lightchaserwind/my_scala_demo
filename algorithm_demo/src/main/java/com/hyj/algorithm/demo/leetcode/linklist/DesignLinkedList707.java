@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DesignLinkedList707 {
+    // doubly linked list
     static class MyLinkedList {
         private class Node {
             private int val;
@@ -107,26 +108,27 @@ public class DesignLinkedList707 {
         }
 
         public void deleteAtIndex(int index) {
-            if (index >= size) {
+            if (index < 0 || index >= size) {
                 return;
             }
             Node cur = getNode(index);
             Node pre = cur.prev;
             Node nex = cur.next;
-            if (pre != null) {
+
+            // 更新头节点
+            if (pre == null) {
+                head = nex;
+            } else {
                 pre.next = nex;
             }
-            if (nex != null) {
+
+            // 更新尾节点
+            if (nex == null) {
+                tail = pre;
+            } else {
                 nex.prev = pre;
             }
-            if (index == 0) {
-                // delete at head
-                head = nex;
-            }
-            if (index == size - 1) {
-                // delete at tail
-                tail = pre;
-            }
+
             size--;
         }
 
@@ -141,8 +143,101 @@ public class DesignLinkedList707 {
         }
     }
 
+    // singly linked list
+    static class MySinglyLinkedList {
+        private class Node {
+            private int val;
+            private Node next;
+
+            public Node(int val) {
+                this.val = val;
+            }
+        }
+
+        private Node dummyHead;
+        private int size;
+
+        public MySinglyLinkedList() {
+            // avoid null check
+            dummyHead = new Node(0);
+        }
+
+        public int get(int index) {
+            Node cur = getNode(index);
+            return cur == dummyHead ? -1 : cur.val;
+        }
+
+        private Node getNode(int index) {
+            if (index >= size || index < 0) {
+                return dummyHead;
+            }
+            // find from head
+            Node cur = dummyHead.next;
+            for (int i = 0; i < index; i++) {
+                cur = cur.next;
+            }
+            return cur;
+        }
+
+        public void addAtHead(int val) {
+            insertAfter(dummyHead, new Node(val));
+            size++;
+        }
+
+        private void insertAfter(Node cur, Node node) {
+            node.next = cur.next;
+            cur.next = node;
+        }
+
+
+        public void addAtTail(int val) {
+            Node node = new Node(val);
+            insertAfter(getNode(size - 1), node);
+            size++;
+        }
+
+        public void addAtIndex(int index, int val) {
+            if (index > size) {
+                return;
+            }
+            if (index == size) {
+                addAtTail(val);
+                return;
+            }
+            if (index == 0) {
+                addAtHead(val);
+                return;
+            }
+            Node pre = getNode(index - 1);
+            Node node = new Node(val);
+            insertAfter(pre, node);
+            size++;
+        }
+
+        public void deleteAtIndex(int index) {
+            if (index < 0 || index >= size) {
+                return;
+            }
+            Node pre = getNode(index - 1);
+            Node cur = pre.next;
+            pre.next = cur.next;
+            cur.next = null;
+            size--;
+        }
+
+        public void print() {
+            Node cur = dummyHead.next;
+            List<Integer> list = new ArrayList<>();
+            while (cur != null) {
+                list.add(cur.val);
+                cur = cur.next;
+            }
+            System.out.println(list);
+        }
+    }
+
     public static void main(String[] args) {
-        MyLinkedList myLinkedList = new MyLinkedList();
+        MySinglyLinkedList myLinkedList = new MySinglyLinkedList();
         myLinkedList.addAtHead(1);
         myLinkedList.deleteAtIndex(0);
         myLinkedList.addAtTail(2);
